@@ -18,3 +18,5 @@ Edit protected/config/main.php to import batsg
         'ext.batsg.*',
     ),
 }}}
+
+mb_internal_encoding("UTF-8");
