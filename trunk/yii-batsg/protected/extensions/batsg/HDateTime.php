@@ -62,6 +62,7 @@ class HDateTime
    * Create an HDateTime object from a string that represents date time.
    * 
    * @param string $dateTime Source date time string.
+   *   $dateTime may be "year/month/day" or "year/month/day hour:minute" or "year/month/day hour:minute:second"
    * @return HDateTime
    */
   public static function createFromString($dateTime)
@@ -269,11 +270,11 @@ class HDateTime
    */
   public function lastDayOfMonth()
   {
-    return self::createFromYmdHms($this->_year, $this->_month + 1, -1);
+    return self::createFromYmdHms($this->_year, $this->_month + 1, 0);
   }
 
   /**
-   * Get date part.
+   * Get a HDateTime object with the date part from current object (time part is zero).
    * @return HDateTime
    */
   public function date()

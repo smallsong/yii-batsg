@@ -147,18 +147,25 @@ class HJapanese
   /**
    * 和暦変換用の関数: 平成xx年yy月zz日
    * @param HDateTime $hDateTime
+   * @param string $mdFormat the format string for month and day. For example "m月d日" or "n月j日"
    * @return string
    */
-  public static function toJapaneseCalendar($dateTime)
+  public static function toJapaneseCalendar($dateTime, $mdFormat = 'm月d日')
   {
     $japaneseYear = self::getJapaneseYear($dateTime, $eraName, $yearNumber);
     if ($japaneseYear) {
-      return $japaneseYear . $dateTime->toString('m月d日');
+      return $japaneseYear . $dateTime->toString($mdFormat);
     } else {
       return $dateTime->toString('Y/m/d');
     }
   }
   
+  /**
+   * Split a string to array.
+   * This is like str_split, but work with UTF8 string.
+   * @param string $str
+   * @param int $split_length
+   */
   public static function mb_str_split($str, $split_length = 1)
   {
     if ($split_length < 1) return FALSE;
@@ -173,7 +180,7 @@ class HJapanese
    * Check if a string contain only Hiragana.
    * @see http://pentan.info/php/reg/is_hira.html
    * @param string $str
-   * @return boolean
+   * @return int 0 or 1
    */
   public static function containHiragana($str)
   {
@@ -184,7 +191,7 @@ class HJapanese
    * Check if a string contain only Katakana.
    * @see http://pentan.info/php/reg/is_kana.html
    * @param string $str
-   * @return boolean
+   * @return int 0 or 1
    */
   public static function containKatakana($str)
   {
