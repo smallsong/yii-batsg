@@ -1,17 +1,17 @@
 <?php
 class Y
 {
-	/**
-	 * @var string default category to be used in Yii::t().
-	 */
-	public static $i18nDefaultCategory = 'app';
+  /**
+   * @var string default category to be used in Yii::t().
+   */
+  public static $i18nDefaultCategory = 'app';
 
   /**
    * @var string URL parameter to specify language.
    */
   public static $urlParamLanguage = 'language';
   
-	/**
+  /**
    * Call Yii::t().
    * @param string $mesage
    * @param string $category use self::$i18nDefaultCategory if not specified.
@@ -20,9 +20,9 @@ class Y
    */
   public static function t($message, $params = array(), $category = NULL)
   {
-  	if ($category === NULL) {
-  		$category = self::$i18nDefaultCategory;
-  	}
+    if ($category === NULL) {
+      $category = self::$i18nDefaultCategory;
+    }
     return Yii::t($category, $message, $params);
   }
   
@@ -108,11 +108,11 @@ class Y
    */
   public static function params()
   {
-  	$params = Yii::app()->params;
-  	foreach (func_get_args() as $arg) {
-  		$params = $params[$arg];
-  	}
-  	return $params;
+    $params = Yii::app()->params;
+    foreach (func_get_args() as $arg) {
+      $params = $params[$arg];
+    }
+    return $params;
   }
 //
 //  /**
@@ -156,11 +156,11 @@ class Y
    */
   public static function translateArrayValue($array)
   {
-  	$arr = array();
-  	foreach ($array as $key => $value) {
-  		$arr[$key] = Y::t($value);
-  	}
-  	return $arr;
+    $arr = array();
+    foreach ($array as $key => $value) {
+      $arr[$key] = Y::t($value);
+    }
+    return $arr;
   }
 
   /**

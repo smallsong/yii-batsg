@@ -1,26 +1,26 @@
 <?php
 class HJapanese
 {
-	const DATETIME_YEAR = '年';
-	const DATETIME_MONTH = '月';
-	const DATETIME_DAY = '日';
-	const DATETIME_HOUR = '時';
-	const DATETIME_MINUTE = '分';
-	const DATETIME_SECOND = '秒';
-	
-	/**
-	 * @var array Name of week days (as value of date('w'): 0 for Sunday, 1 for Monday, etc).
-	 */
-	public static $weekDays = array('日', '月', '火', '水', '木', '金', '土');
+  const DATETIME_YEAR = '年';
+  const DATETIME_MONTH = '月';
+  const DATETIME_DAY = '日';
+  const DATETIME_HOUR = '時';
+  const DATETIME_MINUTE = '分';
+  const DATETIME_SECOND = '秒';
+  
+  /**
+   * @var array Name of week days (as value of date('w'): 0 for Sunday, 1 for Monday, etc).
+   */
+  public static $weekDays = array('日', '月', '火', '水', '木', '金', '土');
 
-	public static $halfWidthDigits = array(
-	  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-	);
-	public static $fullWidthDigits = array(
-	  '０', '１', '２', '３', '４', '５', '６', '７', '８', '９'
-	);
-	
-	public static $fullWidthDigitsToHalfWidth = array(
+  public static $halfWidthDigits = array(
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+  );
+  public static $fullWidthDigits = array(
+    '０', '１', '２', '３', '４', '５', '６', '７', '８', '９'
+  );
+  
+  public static $fullWidthDigitsToHalfWidth = array(
     '０' => 0, '１' => 1, '２' => 2, '３' => 3, '４' => 4, '５' => 5, '６' => 6, '７' => 7, '８' => 8, '９' => 9
   );
   
@@ -31,8 +31,8 @@ class HJapanese
    */
   public static function replaceFullWidthDigits($subject)
   {
-  	$subject = str_replace(self::$fullWidthDigits, self::$halfWidthDigits, $subject);
-  	return $subject;
+    $subject = str_replace(self::$fullWidthDigits, self::$halfWidthDigits, $subject);
+    return $subject;
   }
   
   /**
@@ -55,36 +55,36 @@ class HJapanese
    */
   public static function parseDateTime($dateTime, $hasFullWidthDigits = TRUE)
   {
-  	$patterns = array(
-	      'year'   => '/(\d+)年/',
-	      'month'  => '/(\d+)月/',
-	      'day'    => '/(\d+)日/',
-	      'hour'   => '/(\d+)時/',
-	      'minute' => '/(\d+)分/',
-	      'second' => '/(\d+)秒/',
-  	);
-  	// Convert full width digits.
+    $patterns = array(
+        'year'   => '/(\d+)年/',
+        'month'  => '/(\d+)月/',
+        'day'    => '/(\d+)日/',
+        'hour'   => '/(\d+)時/',
+        'minute' => '/(\d+)分/',
+        'second' => '/(\d+)秒/',
+    );
+    // Convert full width digits.
     if ($hasFullWidthDigits) {
       $dateTime = self::replaceFullWidthDigits($dateTime);
     }
-  	// Initiate the data.
-  	$now = HDateTime::now();
-  	$elements = array(
-	  	  'year'   => $now->getYear(),
-	  	  'month'  => $now->getMonth(),
-	  	  'day'    => $now->getDay(),
-	  	  'hour'   => 0,
-	  	  'minute' => 0,
-	  	  'second' => 0,
-  	);
-  	// Grep
-  	foreach ($patterns as $name => $pattern) {
-  		if (preg_match($pattern, $dateTime, $match)) {
-  			$elements[$name] = $match[1];
-  		}
-  	}
-  	return HDateTime::createFromYmdHms(
-  	    $elements['year'],
+    // Initiate the data.
+    $now = HDateTime::now();
+    $elements = array(
+        'year'   => $now->getYear(),
+        'month'  => $now->getMonth(),
+        'day'    => $now->getDay(),
+        'hour'   => 0,
+        'minute' => 0,
+        'second' => 0,
+    );
+    // Grep
+    foreach ($patterns as $name => $pattern) {
+      if (preg_match($pattern, $dateTime, $match)) {
+        $elements[$name] = $match[1];
+      }
+    }
+    return HDateTime::createFromYmdHms(
+        $elements['year'],
         $elements['month'],
         $elements['day'],
         $elements['hour'],
