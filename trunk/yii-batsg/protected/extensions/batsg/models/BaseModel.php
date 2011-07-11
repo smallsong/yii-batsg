@@ -8,7 +8,7 @@ class BaseModel extends CActiveRecord
    * @param mixed $id the primary key of the model to be loaded
    * @return CActiveRecord
    */
-  public static function loadModel($modelClassName, $id == NULL)
+  public static function loadModel($modelClassName, $id = NULL)
   {
     if ($id !== NULL) {
       $model = call_user_func(array($modelClassName, 'model'))->findByPk($id);

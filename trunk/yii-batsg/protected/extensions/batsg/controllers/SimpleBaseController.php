@@ -28,7 +28,7 @@ class SimpleBaseController extends BaseController
     }
     if ($saveDb == TRUE || ($saveDb === NULL && isset($_POST[$modelClassName]))) {
       // Redirect to view page if save successfully.
-      if($this->simpleCreateOrUpdateSaveModel($model) {
+      if($this->simpleCreateOrUpdateSaveModel($model)) {
           Y::setFlashSuccess($successFlashMessage);
           $this->redirect(array('view', $pkName => $model->$pkName));
       }
