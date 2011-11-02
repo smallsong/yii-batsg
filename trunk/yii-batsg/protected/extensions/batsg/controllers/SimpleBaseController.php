@@ -65,7 +65,7 @@ class SimpleBaseController extends BaseController
     {
       $model->attributes = $_POST[$modelClassName];
       // Render confirm view if data is valid.
-      if($this->simpleConfirmValidate($model) {
+      if($this->simpleConfirmValidate($model)) {
       	return $this->render($confirmView, array('model' => $model));
       }
     }
