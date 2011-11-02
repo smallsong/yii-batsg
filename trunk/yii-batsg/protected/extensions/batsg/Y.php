@@ -185,5 +185,44 @@ class Y
       Yii::app()->language = Yii::app()->session[self::$urlParamLanguage];
     }
   }
+  
+  /**
+   * Generate url for language setting.
+   * @param array $languages $language[$languageCode] = Language name.
+   * @return array <languageCode> => url
+   */
+  public static function languageSettingUrls($languages)
+  {
+    $urls = array();
+    $route = Yii::app()->urlManager->parseUrl(Yii::app()->request); // Route for createUrl().
+    $app = Yii::app(); // CApplication
+    $getParam = $_GET; // Copy $_GET
+    foreach ($languages as $code => $name) {
+      $getParam[self::$urlParamLanguage] = $code;
+      $urls[$code] = $app->createUrl($route, $getParam);
+    }
+    return $urls;
+  }
+  
+  /**
+   * Generate url for language setting.
+   * @param array $languages $language[$languageCode] = Language name.
+   * @param string $separator Separator between HTML links.
+   * @return string
+   */
+  public static function languageSettingLinks($languages, $separator = ' ')
+  {
+    $htmls = array();
+    $urls = Y::languageSettingUrls($languages);
+    foreach ($urls as $code => $url) {
+      $languageName = $languages[$code];
+      if ($code == Yii::app()->language) {
+        $htmls[] = $languageName;
+      } else {
+        $htmls[] = CHtml::link($languageName, $url);
+      }
+    }
+    return join($separator, $htmls);
+  }
 }
 ?>
