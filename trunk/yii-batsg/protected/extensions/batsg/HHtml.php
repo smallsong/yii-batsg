@@ -1,7 +1,7 @@
 <?php
 /**
  * Alternative class of CHtml.
- * 
+ *
  * @author thanh <umbalaconmeogia@gmail.com>
  */
 class HHtml
@@ -71,7 +71,7 @@ class HHtml
     }
     return CHtml::checkBoxList($name, $select, $data, $htmlOptions);
   }
-  
+
   /**
    * Get cycling value.
    * @param int $counter
@@ -84,7 +84,7 @@ class HHtml
     $counter = ($counter + 1) % count($values);
     return $value;
   }
-  
+
   /**
    * Echo class="odd" or class="even"
    * @param int $counter
@@ -99,7 +99,7 @@ class HHtml
     }
     return $cssClass;
   }
-  
+
   /**
    * Generate a link display as button.
    * See CHtml::link() for the parameters' detail.
@@ -115,6 +115,26 @@ class HHtml
       $htmlOptions['onclick'] = "window.location='$url'";
     }
     return CHtml::button($text, $htmlOptions);
+  }
+
+  /**
+   * Display hidden fields.
+   * @param CActiveRecord $model
+   * @param string $index
+   * @param mixed $fields NULL, or string (fields name), or array of fieldNames.
+   */
+  public static function showHiddenFields($model, $index = NULL, $fields = NULL)
+  {
+    if (!$fields) {
+      $fields = array_keys($model->attributes);
+    }
+    if (!is_array($fields)) {
+      $fields = array($fields);
+    }
+    foreach ($fields as $field) {
+      $attribute = $index !== NULL ? "[$index]$field" : $field;
+      echo CHtml::activeHiddenField($model, $attribute, array('class' => $field)) . "\n";
+    }
   }
 }
 ?>

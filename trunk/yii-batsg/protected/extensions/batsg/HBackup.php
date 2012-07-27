@@ -69,23 +69,38 @@ class HBackup {
    */
   private static function appendTableToCsv($modelClassName, $handle)
   {
+    Yii::log("Save data of type $modelClassName");
     // Get model object.
     $model = new $modelClassName;
     // Get array of attributes.
     $attributes = $model->attributeNames();
-    // Get all record from db.
-    $records = $model->model()->findAll();
-    // Write column name.
-    fputcsv($handle, $attributes);
-    // Write records.
-    foreach ($records as $record) {
-      // Put record data to an array.
-      $data = array();
-      foreach ($attributes as $attribute) {
-        $data[] = $record->$attribute;
+    $offset = 0;
+    $limit = 1000;
+    do {
+      Yii::log("Load $limit records from $offset");
+      // Get all record from db.
+      $records = $model->model()->findAll(array('offset' => $offset, 'limit' => $limit));
+      if (!$records) {
+        break;
       }
-      fputcsv($handle, $data);
-    }
+
+      // Write column name.
+      fputcsv($handle, $attributes);
+      // Write records.
+      foreach ($records as $record) {
+        // Put record data to an array.
+        $data = array();
+        foreach ($attributes as $attribute) {
+          $data[] = $record->$attribute;
+        }
+        fputcsv($handle, $data);
+      }
+
+      Yii::log("Memory usage " . number_format(memory_get_usage()) . " bytes");
+      // Goto next offset.
+      $offset += $limit;
+//      $records = null; // Free memory.
+    } while (true);
   }
 
   /**

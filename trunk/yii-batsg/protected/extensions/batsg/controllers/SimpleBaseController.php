@@ -230,19 +230,5 @@ abstract class SimpleBaseController extends BaseController
   {
     return $model->validate();
   }
-
-  /**
-   * Load existed/create new model.
-   * <p>
-   * Override this when neccessary, for example, to set some attributes
-   * of the model.
-   * @param string $modelClassName
-   * @param mixed $id The object id. If id is NULL, then new model object is created.
-   * @return BaseModel
-   */
-  protected function loadModel($modelClassName, $id)
-  {
-    return BaseModel::loadModel($modelClassName, $id);
-  }
 }
 ?>
