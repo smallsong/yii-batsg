@@ -20,7 +20,7 @@ class BaseModel extends CActiveRecord
     }
     return $model;
   }
-  
+
   /**
    * Get all errors on this model.
    * @param string $attribute attribute name. Use null to retrieve errors for all attributes.
@@ -41,6 +41,15 @@ class BaseModel extends CActiveRecord
       }
     }
     return $errors;
+  }
+
+  /**
+   * Log error of this model.
+   */
+  public function logError()
+  {
+    Yii::log($this->tableName() . " " . print_r($this->attributes, TRUE), 'error');
+    Yii::log(print_r($this->getErrorMessages(), TRUE), 'error');
   }
 }
 ?>
