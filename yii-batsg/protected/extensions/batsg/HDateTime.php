@@ -342,7 +342,7 @@ class HDateTime
    * Create an HDateTime object by increase/decrease several days from
    * the current object.
    *
-   * @param $n
+   * @param int $n
    * @param bool $modify Modify the object itself if is set to TRUE.
    * @return HDateTime
    */
@@ -355,7 +355,7 @@ class HDateTime
    * Create an HDateTime object by increase/decrease several hours from
    * the current object.
    *
-   * @param $n
+   * @param int $n
    * @param bool $modify Modify the object itself if is set to TRUE.
    * @return HDateTime
    */
@@ -368,7 +368,7 @@ class HDateTime
    * Create an HDateTime object by increase/decrease several minutes from
    * the current object.
    *
-   * @param $n
+   * @param int $n
    * @param bool $modify Modify the object itself if is set to TRUE.
    * @return HDateTime
    */
@@ -381,7 +381,7 @@ class HDateTime
    * Create an HDateTime object by increase/decrease several seconds from
    * the current object.
    *
-   * @param $n
+   * @param int $n
    * @param bool $modify Modify the object itself if is set to TRUE.
    * @return HDateTime
    */
