@@ -122,8 +122,9 @@ class HHtml
    * @param CActiveRecord $model
    * @param string $index
    * @param mixed $fields NULL, or string (fields name), or array of fieldNames.
+   * @param array $htmlOptions
    */
-  public static function showHiddenFields($model, $index = NULL, $fields = NULL)
+  public static function showHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
   {
     if (!$fields) {
       $fields = array_keys($model->attributes);
@@ -133,7 +134,14 @@ class HHtml
     }
     foreach ($fields as $field) {
       $attribute = $index !== NULL ? "[$index]$field" : $field;
-      echo CHtml::activeHiddenField($model, $attribute, array('class' => $field)) . "\n";
+      // Add class to html options.
+      $options = $htmlOptions;
+      if (isset($options['class'])) {
+        $options['class'] .= " $field";
+      } else {
+        $options['class'] = "$field";
+      }
+      echo CHtml::activeHiddenField($model, $attribute, $options) . "\n";
     }
   }
 }
