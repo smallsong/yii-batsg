@@ -45,9 +45,13 @@ class BaseModel extends CActiveRecord
 
   /**
    * Log error of this model.
+   * @param string $message
    */
-  public function logError()
+  public function logError($message = NULL)
   {
+    if ($message) {
+      Yii::log($message, 'error');
+    }
     Yii::log($this->tableName() . " " . print_r($this->attributes, TRUE), 'error');
     Yii::log(print_r($this->getErrorMessages(), TRUE), 'error');
   }
