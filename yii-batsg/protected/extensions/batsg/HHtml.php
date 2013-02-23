@@ -51,6 +51,34 @@ class HHtml
   }
 
   /**
+   * Display a checkbox that is "readonly" (user cannot click on it).
+   * This is used mainly for displaying data as checkbox.
+   * @param string $name
+   * @param boolean $checked
+   * @param array $htmlOptions addtional HTML options.
+   */
+  public static function readOnlyCheckBox($name, $checked, $htmlOptions = array())
+  {
+    $htmlOptions['onclick'] = 'return false;';
+    $htmlOptions['onkeydown'] = 'return false;';
+    return CHtml::checkBox($name, $checked, $htmlOptions);
+  }
+
+  /**
+   * Display a checkbox that is "readonly" (user cannot click on it).
+   * This is used mainly for displaying data as checkbox.
+   * @param CModel $model the data model
+   * @param string $attribute the attribute
+   * @param array $htmlOptions addtional HTML options.
+   */
+  public static function activeReadOnlyCheckBox($model, $attribute, $htmlOptions = array())
+  {
+    $htmlOptions['onclick'] = 'return false;';
+    $htmlOptions['onkeydown'] = 'return false;';
+    return CHtml::activeCheckBox($model, $attribute, $htmlOptions);
+  }
+
+  /**
    * Generates a check box list.
    * This method is a wrapper of {@link CHtml::activeCheckBoxList}.
    * Please check {@link CHtml::activeCheckBoxList} for detailed information
@@ -108,9 +136,9 @@ class HHtml
    * @param array $htmlOptions additional HTML attributes.
    * @return string the generated hyperlink
    */
-  public static function buttonLink($text, $url='#',$htmlOptions = array())
+  public static function buttonLink($text, $url='#', $htmlOptions = array())
   {
-    if (!isset($htmlOptions['onlick'])) {
+    if (!isset($htmlOptions['onclick'])) {
       $url = CHtml::normalizeUrl($url);
       $htmlOptions['onclick'] = "window.location='$url'";
     }
