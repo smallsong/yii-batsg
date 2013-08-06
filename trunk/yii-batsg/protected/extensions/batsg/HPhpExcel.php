@@ -1,4 +1,7 @@
 <?php
+Yii::import('application.vendors.*');
+require_once "PHPExcel/Classes/PHPExcel.php";
+
 /**
  * Helper to access PHPExcel (http://phpexcel.codeplex.com/).
  */
