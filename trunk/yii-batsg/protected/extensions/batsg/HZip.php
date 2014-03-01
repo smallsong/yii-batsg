@@ -13,7 +13,7 @@ class HZip
    * @param ZipArchive $zipFile
    * @param int $exclusiveLength Number of text to be exclusived from the file path.
    */
-  private static function folderToZip($folder, &$zipFile, $exclusiveLength) {
+  private static function folderToZip($folder, $zipFile, $exclusiveLength) {
     $handle = opendir($folder);
     while ($f = readdir($handle)) {
       if ($f != '.' && $f != '..') {
@@ -49,7 +49,8 @@ class HZip
     $z = new ZipArchive();
     $z->open($outZipPath, ZIPARCHIVE::CREATE);
     $z->addEmptyDir($dirName);
-    self::folderToZip($sourcePath, $z, strlen("$parentPath/"));
+    echo "$parentPath\n";
+    self::folderToZip($sourcePath, $z, strlen($sourcePath) - strlen($dirName));
     $z->close();
   }
 }
