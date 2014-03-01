@@ -146,6 +146,40 @@ class HHtml
   }
 
   /**
+   * Generate a button with GET.
+   * See CHtml::button() for the parameters' detail.
+   * @param string $label The button label.
+   * @param array $htmlOptions additional HTML attributes.
+   * @return string the generated hyperlink
+   */
+//   public static function button($label = 'button', array $htmlOptions = array())
+//   {
+//     if (!isset($htmlOptions['onclick']) && isset($htmlOptions['submit'])) {
+//       $url = CHtml::normalizeUrl($htmlOptions['submit']);
+//       $htmlOptions['onclick'] = "window.location='$url'";
+//       unset($htmlOptions['submit']);
+//     }
+//     return CHtml::button($label, $htmlOptions);
+//   }
+
+  /**
+   * Generate a link display as button.
+   * See CHtml::link() for the parameters' detail.
+   * @param string $text link body. This is changed to button tag.
+   * @param mixed $url a URL or an action route that can be used to create a URL.
+   * @param array $htmlOptions additional HTML attributes.
+   * @return string the generated hyperlink
+   */
+  public static function htmlButtonLink($text, $url='#', $htmlOptions = array())
+  {
+    if (!isset($htmlOptions['onclick'])) {
+      $url = CHtml::normalizeUrl($url);
+      $htmlOptions['onclick'] = "window.location='$url'";
+    }
+    return CHtml::htmlButton($text, $htmlOptions);
+  }
+  
+  /**
    * Display hidden fields.
    * @param CActiveRecord $model
    * @param string $index
