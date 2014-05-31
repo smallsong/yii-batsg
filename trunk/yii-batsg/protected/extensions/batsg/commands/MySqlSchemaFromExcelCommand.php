@@ -198,7 +198,7 @@ EOT;
 
     $s = "CREATE TABLE {$this->name} (\n";
     $s .= join(",\n", $tableDef);
-    $s .= "\n) ENGINE = INNODB;";
+    $s .= "\n) COMMENT '{$this->comment1}'\nENGINE = INNODB;";
 
     return $s;
   }
@@ -281,7 +281,7 @@ class ColumnDef
     $other = $other ? " {$other}" : NULL;
 
     // Generate comment.
-    $comment = $this->comment1 ? "{$this->comment}。{$this->comment1}" : $this->comment;
+    $comment = $this->comment1 ? "{$this->comment}\t{$this->comment1}" : $this->comment;
     $comment = $comment ? " COMMENT '{$comment}'" : NULL;
 
     $s = "{$this->name} $type$notNull$default$other$comment";
