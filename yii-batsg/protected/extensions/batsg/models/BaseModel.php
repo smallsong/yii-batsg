@@ -10,7 +10,7 @@ class BaseModel extends CActiveRecord
    */
   public static function loadModel($modelClassName, $id = NULL)
   {
-    if ($id !== NULL) {
+    if ($id != NULL) {
       $model = call_user_func(array($modelClassName, 'model'))->findByPk($id);
       if($model === null) {
         throw new CHttpException(404, 'The requested page does not exist.');
@@ -54,6 +54,57 @@ class BaseModel extends CActiveRecord
     }
     Yii::log($this->tableName() . " " . print_r($this->attributes, TRUE), 'error', $category);
     Yii::log(print_r($this->getErrorMessages(), TRUE), 'error', $category);
+  }
+
+  /**
+   * Create a hash of model list by a field value.
+   * @param CActiveRecord $models
+   * @param string $hashField Default by id.
+   * @return array field value => model.
+   */
+  public static function hashModels($models, $hashField = 'id') {
+    $hash = array();
+    foreach ($models as $model) {
+      $hash[$model->$hashField] = $model;
+    }
+    return $hash;
+  }
+
+  /**
+   * Create a criteria for searching fields with OR operator (for example, searching name and name kana fields).
+   * This is used to merge with the main criteria.
+   * @param string $searchValue
+   * @param string $table
+   * @param string[] $fields
+   * @return CDbCriteria
+   */
+  protected function dbCriteriaOr($searchValue, $fields, $table = 't', $partialMatch = TRUE)
+  {
+    $prefix = $table ? "{$table}." : NULL;
+    $criteria = new CDbCriteria();
+    foreach ($fields as $field) {
+      $criteria->compare("$prefix$field", $searchValue, $partialMatch, 'OR');
+    }
+    return $criteria;
+  }
+
+
+  /**
+   * @param mixed $fields String or string array. If NULL, all attributes are used.
+   * @return string.
+   */
+  public function toString($fields = NULL)
+  {
+    if ($fields === NULL) {
+      $fields = array_keys($this->attributes);
+    }
+    if (!is_array($fields)) {
+      $info = array();
+    }
+    foreach ($fields as $field) {
+      $info[] = "$field: {$this->$field}";
+    }
+    return get_class($this) . '(' . join(', ', $info) . ')';
   }
 }
 ?>

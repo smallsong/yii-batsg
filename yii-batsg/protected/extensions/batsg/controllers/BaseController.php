@@ -61,9 +61,9 @@ class BaseController extends CController
    * @param mixed $id The object id. If id is NULL, then new model object is created.
    * @return BaseModel
    */
-  protected function loadModel($modelClassName, $id)
-  {
-    return BaseModel::loadModel($modelClassName, $id);
-  }
+//  protected function loadModel($modelClassName, $id = NULL)
+//  {
+//    return BaseModel::loadModel($modelClassName, $id);
+//  }
 }
 ?>

@@ -110,34 +110,45 @@ class HBackup {
    */
   public static function importDbFromCsv($inputFileName)
   {
-    // Open input file.
-    $handle = fopen($inputFileName, 'r');
+    $transaction = Yii::app()->db->beginTransaction(); // Open transaction.
+    try {
+      // Open input file.
+      $handle = fopen($inputFileName, 'r');
 
-    // Read each line of csv.
-    $attributes = NULL;
-    while (($data = fgetcsv($handle)) !== FALSE) {
-      if ($data[0] === self::TABLE_MARKER) {
-        // Process model class name line.
-        $modelClassName = $data[1];
-        $attributes = NULL; // Reset attribute names.
-      } else if ($attributes === NULL) {
-        // Process model attribute names line.
-        $attributes = $data;
-      } else {
-        // Process record data line.
-        $model = new $modelClassName;
-        foreach ($attributes as $index => $attribute) {
-          $model->$attribute = $data[$index];
-        }
-        // Save record.
-        if (!$model->save()) {
-          throw new Exception("Error saving $modelClassName $model");
+      // Read each line of csv.
+      $attributes = NULL;
+      while (($data = fgetcsv($handle)) !== FALSE) {
+        if ($data[0] === self::TABLE_MARKER) {
+          // Process model class name line.
+          $modelClassName = $data[1];
+          $attributes = NULL; // Reset attribute names.
+        } else if ($attributes === NULL) {
+          // Process model attribute names line.
+          $attributes = $data;
+        } else {
+          // Process record data line.
+          $model = new $modelClassName;
+          foreach ($attributes as $index => $attribute) {
+            if ($attribute) {
+              $model->$attribute = $data[$index] === 'NULL' || $data[$index] === '' ? NULL : $data[$index];
+            }
+          }
+          // Save record.
+          if (!$model->save()) {
+            $model->logError("Error saving $modelClassName");
+            throw new Exception("Error saving $modelClassName $model");
+          }
         }
       }
-    }
 
-    // Close output file.
-    fclose($handle);
+      // Close output file.
+      fclose($handle);
+
+      $transaction->commit(); // Commit transaction.
+    } catch (Exception $e) {
+      $transaction->rollback(); // Rolback transaction.
+      throw $e;
+    }
   }
 
   /**

@@ -178,7 +178,7 @@ class HHtml
     }
     return CHtml::htmlButton($text, $htmlOptions);
   }
-  
+
   /**
    * Display hidden fields.
    * @param CActiveRecord $model
@@ -188,9 +188,11 @@ class HHtml
    */
   public static function showHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
   {
+    // Output all attributes if $fields is not specified.
     if (!$fields) {
       $fields = array_keys($model->attributes);
     }
+    // Wrap $fields by array if only string specified.
     if (!is_array($fields)) {
       $fields = array($fields);
     }
@@ -205,6 +207,27 @@ class HHtml
       }
       echo CHtml::activeHiddenField($model, $attribute, $options) . "\n";
     }
+  }
+
+  /**
+   * Generate an index for model list element.
+   * @param BaseModel $model
+   * @param string $pk
+   * @return string
+   */
+  public static function modelIndex($model, $pk = 'id')
+  {
+    return $model->$pk ? $model->$pk : time() . '_' . HRandom::generatePassword(4);
+  }
+
+  /**
+   * Format long text to display.
+   * This will use CHtml::encode and convert nl2br.
+   * @param string $remarks
+   */
+  public static function longText($text)
+  {
+    return nl2br(CHtml::encode($text));
   }
 }
 ?>
