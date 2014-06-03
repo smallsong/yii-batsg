@@ -28,18 +28,20 @@ class HBackup {
   /**
    * Export data of specified tables to csv file.
    *
-   * @param string[] $modelClassNames Name of model classes to be backed up.
    * @param string $outputFileName
+   * @param string[] $modelClassNames Name of model classes to be backed up.
+   *                  If NULL, then backup all tables.
    */
-  public static function exportDbToCsv($modelClassNames, $outputFileName)
+  public static function exportDbToCsv($outputFileName, $modelClassNames = NULL)
   {
+    if ($modelClassNames === NULL) {
+      $modelClassNames = self::getModelClassList();
+    }
     // Open output file.
     $handle = fopen($outputFileName, 'w');
 
     // Export each table.
     foreach ($modelClassNames as $modelClassName) {
-      // Write table name.
-      fputcsv($handle, array(self::TABLE_MARKER, $modelClassName));
       // Write data.
       self::appendTableToCsv($modelClassName, $handle);
     }
@@ -48,6 +50,34 @@ class HBackup {
     fclose($handle);
   }
 
+  /**
+   * Try to get all model classes in protected/models
+   * @return string[]
+   */
+  public static function getModelClassList()
+  {
+    $classList = array();
+
+    $tableNames = Yii::app()->db->schema->tableNames;
+
+    $searchStr = Yii::app()->basePath . '/models/*.php';
+    foreach(glob($searchStr) as $filePath){
+      $className = HFile::fileFileName($filePath);
+
+      // Check if table exist.
+      if (is_subclass_of($className, 'CActiveRecord') && method_exists($className, 'tableName')) {
+        try {
+          $tableName = (new $className())->tableName();
+        } catch (Exception $e) {
+          $tableName = NULL;
+        }
+        if (in_array($tableName, $tableNames)) {
+          $classList[] = $className;
+        }
+      }
+    }
+    return $classList;
+  }
 
   /**
    * Export data of specified table to csv file.
@@ -70,10 +100,17 @@ class HBackup {
   private static function appendTableToCsv($modelClassName, $handle)
   {
     Yii::log("Save data of type $modelClassName");
+
     // Get model object.
     $model = new $modelClassName;
     // Get array of attributes.
     $attributes = $model->attributeNames();
+
+    // Write table name.
+    fputcsv($handle, array(self::TABLE_MARKER, $modelClassName));
+    // Write column name.
+    fputcsv($handle, $attributes);
+
     $offset = 0;
     $limit = 1000;
     do {
@@ -84,8 +121,6 @@ class HBackup {
         break;
       }
 
-      // Write column name.
-      fputcsv($handle, $attributes);
       // Write records.
       foreach ($records as $record) {
         // Put record data to an array.
