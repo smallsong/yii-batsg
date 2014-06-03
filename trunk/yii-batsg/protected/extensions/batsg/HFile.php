@@ -93,15 +93,7 @@ class HFile
   public static function fileFileName($path)
   {
     $pathInfo = pathinfo($path);
-    $baseName = $pathInfo['filename'];
-//    Yii::log("basename: $baseName");
-    if (isset($pathInfo['extension']) && $pathInfo['extension'] === '') {
-      $baseLen_1 = strlen($baseName) - 1;
-      if (substr($baseName, $baseLen_1) == '.') {
-        $baseName = substr($baseName, 0, $baseLen_1);
-      }
-    }
-    return $baseName;
+    return $pathInfo['filename'];
   }
 }
 ?>
