@@ -52,6 +52,31 @@ class BaseController extends CController
     return $value;
   }
 
+  protected function loadModelFromParam($modelClassName, $id = NULL, $pk = 'id')
+  {
+    if ($id == NULL && isset($_REQUEST[$modelClassName]) && isset($_REQUEST[$modelClassName][$pk])) {
+      $id = $_REQUEST[$modelClassName][$pk];
+    }
+    $model = BaseModel::loadModel($modelClassName, $id);
+    if (isset($_REQUEST[$modelClassName])) {
+      $model->attributes = $_REQUEST[$modelClassName];
+    }
+    return $model;
+  }
+
+  protected function loadModelListFromParam($modelClassName) {
+    $modelList = array();
+    if (isset($_REQUEST[$modelClassName])) {
+      foreach ($_REQUEST[$modelClassName] as $modelArr) {
+        $model = new $modelClassName;
+        $model->massiveAssign($model, $modelArr);
+        $model->setEmptyStringToNull();
+        $modelList[] = $model;
+      }
+    }
+    return $modelList;
+  }
+
   /**
    * Load existed/create new model.
    * <p>

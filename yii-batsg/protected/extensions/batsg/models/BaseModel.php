@@ -126,5 +126,110 @@ class BaseModel extends CActiveRecord
       $criteria->compare("DATE_FORMAT($column, '%Y-%m')", $dateTime);
     }
   }
+
+  /**
+   * Perform massiveAssignment to a model.
+   * @param CActiveRecord $model
+   * @param array $parameters key=>value to assign to $model->attributes.
+   * @param array $exclusiveFields Fields that are not assigned.
+   */
+  public static function massiveAssign($model, $parameters, $exclusiveFields = array())
+  {
+    foreach ($exclusiveFields as $field) {
+      if (isset($parameters[$field])) {
+        unset($parameters[$field]);
+      }
+    }
+    $model->attributes = $parameters;
+  }
+
+  /**
+   * Set all empty data fields to NULL.
+   * @return CModel This object.
+   */
+  public function setEmptyStringToNull()
+  {
+    foreach ($this->attributes as $field => $value) {
+      if ($value === '') {
+        $this->$field = NULL;
+      }
+    }
+    return $this;
+  }
+
+  /**
+   * Set specified fields to NULL.
+   * @param string[] $fields
+   */
+  public function setFieldToNull($fields = array())
+  {
+    foreach ($fields as $field) {
+      $this->$field = NULL;
+    }
+  }
+
+  /**
+   * Lock table relates to this model.
+   */
+  public function lockThisTable()
+  {
+    self::lockTable($this->tableName());
+  }
+
+  /**
+   * Lock a DB table.
+   * @param string $tableName
+   */
+  public static function lockTable($tableName)
+  {
+    Yii::app()->db->createCommand("LOCK TABLES $tableName WRITE, $tableName AS t WRITE;")->execute();
+  }
+
+  /**
+   * Unlock DB tables.
+   */
+  public static function unlockTables()
+  {
+    Yii::app()->db->createCommand('UNLOCK TABLES;')->execute();
+  }
+
+  /**
+   * Copy fields from other model to this.
+   * @param CActiveRecord $source
+   * @param string[] $fields (array of field names or source field -> dest field.
+   */
+  public function copyFieldFromModel($source, $fields)
+  {
+    foreach ($fields as $index => $fieldName) {
+      $sourceField = is_numeric($index) ? $fieldName : $index;
+      $this->$fieldName = $source->$sourceField;
+    }
+  }
+
+  /**
+   * @param array $arr
+   * @param CActiveRecord $model
+   * @param string[] $fields (array of field names or source field -> dest field.
+   */
+  public function copyFieldToArray(&$arr, $fields)
+  {
+    foreach ($fields as $index => $field) {
+      $sourceField = is_numeric($index) ? $field : $index;
+      $arr[$field] = $this->$sourceField;
+    }
+    return $arr;
+  }
+
+  /**
+   * @param array $source
+   * @param string[] $fields (array of field names or source field -> dest field.
+   */
+  public function copyFieldFromArray($source, $fields)
+  {
+    foreach ($fields as $index => $field) {
+      $sourceField = is_numeric($index) ? $field : $index;
+      $this->$field = $source[$sourceField];
+    }
+  }
 }
 ?>

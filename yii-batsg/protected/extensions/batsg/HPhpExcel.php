@@ -1,9 +1,14 @@
 <?php
-Yii::import('application.vendors.*');
-require_once "PHPExcel/Classes/PHPExcel.php";
+Yii::import('application.vendor.PHPExcel.Classes.PHPExcel');
 
 /**
  * Helper to access PHPExcel (http://phpexcel.codeplex.com/).
+ * To use this, should modify PHPExcel_Autoloader::Register() as below
+ * <code>
+ * public static function Register() {
+ *   return spl_autoload_register(array('PHPExcel_Autoloader', 'Load'), false, true);
+ * }
+ * </code>
  */
 class HPhpExcel
 {
@@ -34,6 +39,15 @@ class HPhpExcel
         $sheet->getCellByColumnAndRow($colIndex, $rowIndex) :
         $sheet->getCell("$colIndex$rowIndex");
     return trim($value);
+  }
+
+  /**
+   * Get value of a work sheet as two dimension array.
+   * @param string[][] $sheet
+   */
+  public static function toArray($sheet)
+  {
+    return $sheet->toArray(null,true,true,true);
   }
 }
 ?>
