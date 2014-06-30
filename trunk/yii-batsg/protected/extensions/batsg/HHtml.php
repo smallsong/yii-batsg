@@ -6,6 +6,8 @@
  */
 class HHtml
 {
+  private static $modelIndexCounter = 0;
+
   /**
    * Renders a radio button list for a model attribute.
    * This method is a wrapper of {@link CHtml::activeRadioButtonList}.
@@ -211,13 +213,14 @@ class HHtml
 
   /**
    * Generate an index for model list element.
+   * If primary key is set, then primary key is used, else a random string is generated.
    * @param BaseModel $model
    * @param string $pk
    * @return string
    */
   public static function modelIndex($model, $pk = 'id')
   {
-    return $model->$pk ? $model->$pk : time() . '_' . HRandom::generatePassword(4);
+    return $model->$pk ? $model->$pk : (++self::$modelIndexCounter) . '_' . HRandom::generatePassword(2);
   }
 
   /**

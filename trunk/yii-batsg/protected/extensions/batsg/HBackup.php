@@ -145,6 +145,7 @@ class HBackup {
    */
   public static function importDbFromCsv($inputFileName)
   {
+    Yii::app()->db->createCommand('SET FOREIGN_KEY_CHECKS=0;')->execute();
     $transaction = Yii::app()->db->beginTransaction(); // Open transaction.
     try {
       // Open input file.
@@ -184,6 +185,7 @@ class HBackup {
       $transaction->rollback(); // Rolback transaction.
       throw $e;
     }
+    Yii::app()->db->createCommand('SET FOREIGN_KEY_CHECKS=1;')->execute();
   }
 
   /**
