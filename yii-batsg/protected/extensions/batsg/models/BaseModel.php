@@ -106,5 +106,25 @@ class BaseModel extends CActiveRecord
     }
     return get_class($this) . '(' . join(', ', $info) . ')';
   }
+
+  /**
+   * Add compare year/month to a db criterial.
+   * @param CDbCriteria $criteria
+   * @param string $column Column to be compared.
+   * @param mixed $dateTime String or HDateTime Input date (or date time).
+   */
+  public static function addCompareYearMonth($criteria, $column, $dateTime)
+  {
+    if ($dateTime) {
+      if (!$dateTime instanceof HDateTime) {
+        $dateTime = preg_split("/[\/\-]+/", $dateTime);
+        if (count($dateTime) > 1) {
+          $dateTime = HDateTime::createFromString($dateTime[0] . '/' . $dateTime[1] . '/1');
+        }
+      }
+      $dateTime = $dateTime->toString('Y-m');
+      $criteria->compare("DATE_FORMAT($column, '%Y-%m')", $dateTime);
+    }
+  }
 }
 ?>
