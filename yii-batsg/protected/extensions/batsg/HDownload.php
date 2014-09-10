@@ -1,6 +1,9 @@
 <?php
 class HDownload
 {
+  const MIME_EXCEL_5 = 'application/vnd.ms-excel';
+  const MIME_EXCEL_2007 = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
   /**
    * Export a file, make browser to download it.
    * @param string $fileName
@@ -19,6 +22,17 @@ class HDownload
     self::downloadFile($fileName, $content, 'application/pdf');
   }
 
+  public static function downloadXls($fileName, $content)
+  {
+    $ext = HFile::fileExtension($fileName);
+    $mime = $ext == 'xlsx' ? self::MIME_EXCEL_2007 : self::MIME_EXCEL_5;
+    self::downloadFile($fileName, $content, $mime);
+  }
+
+  /**
+   * @param string $fileName
+   * @param string $content
+   */
   public static function downloadCsv($fileName, $content)
   {
     self::downloadFile($fileName, $content, 'application/octet-stream');
@@ -28,10 +42,11 @@ class HDownload
    * Generate a CSV file from $data, then make downloading it as specified CSV file.
    * @param string $fileName
    * @param string[] $data
+   * @param boolean $writeUtf8Bom
    */
   public static function downloadCsvArray($fileName, $contentArray, $writeUtf8Bom = TRUE)
   {
-    self::downloadCsv($fileName, self::createCsvFileContent($data, $writeUtf8Bom));
+    self::downloadCsv($fileName, self::createCsvFileContent($contentArray, $writeUtf8Bom));
   }
 
   /**

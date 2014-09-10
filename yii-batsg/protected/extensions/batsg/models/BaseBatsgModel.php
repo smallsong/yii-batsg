@@ -26,7 +26,7 @@ class BaseBatsgModel extends BaseModel
       }
       // create_time will be set when import data from backup csv etc.
       if (!$this->create_time) {
-        $this->create_time = new CDbExpression('NOW()');
+        $this->create_time = HDateTime::now()->toString();
       }
     } else {
       // Only set data_status to "update" if this is not deleted.
@@ -36,7 +36,7 @@ class BaseBatsgModel extends BaseModel
       if (!$this->update_user_id) {
         $this->update_user_id = $currentUserId;
       }
-      $this->update_time = new CDbExpression('NOW()');
+      $this->update_time = HDateTime::now()->toString();
     }
     return parent::beforeValidate();
   }
@@ -55,7 +55,7 @@ class BaseBatsgModel extends BaseModel
 
   /**
    * Get only valid models (data_status <> deleted) from model list.
-   * @param BaseNemoModel[] $modelList
+   * @param BaseBatsgModel[] $modelList
    */
   public static function getValidModels($modelList)
   {
@@ -85,6 +85,19 @@ class BaseBatsgModel extends BaseModel
   public function resetCommonFields()
   {
     $this->setFieldToNull(array('id', 'data_status', 'create_time', 'create_user_id', 'update_time', 'update_user_id'));
+  }
+
+  public function deleteLogically()
+  {
+    $class = get_class($this);
+    Yii::trace("Delete $class {$this->id} logically.");
+
+    $this->data_status = self::DATA_STATUS_DELETE;
+    if (!$this->save()) {
+      $this->logError();
+      $class = get_class($this);
+      throw new Exception("Error while deleting $class {$this->id}");
+    }
   }
 }
 ?>

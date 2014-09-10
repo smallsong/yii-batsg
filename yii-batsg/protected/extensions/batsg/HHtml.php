@@ -188,7 +188,7 @@ class HHtml
    * @param mixed $fields NULL, or string (fields name), or array of fieldNames.
    * @param array $htmlOptions
    */
-  public static function showHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
+  public static function activeHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
   {
     // Output all attributes if $fields is not specified.
     if (!$fields) {
@@ -198,6 +198,7 @@ class HHtml
     if (!is_array($fields)) {
       $fields = array($fields);
     }
+		$html = '';
     foreach ($fields as $field) {
       $attribute = $index !== NULL ? "[$index]$field" : $field;
       // Add class to html options.
@@ -207,10 +208,16 @@ class HHtml
       } else {
         $options['class'] = "$field";
       }
-      echo CHtml::activeHiddenField($model, $attribute, $options) . "\n";
+      $html .= CHtml::activeHiddenField($model, $attribute, $options) . "\n";
     }
+		return $html;
   }
-
+	
+  public static function showHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
+  {
+		echo self::activeHiddenFields($model, $index, $fields, $htmlOptions);
+	}
+	
   /**
    * Generate an index for model list element.
    * If primary key is set, then primary key is used, else a random string is generated.

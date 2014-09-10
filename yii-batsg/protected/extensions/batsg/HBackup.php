@@ -37,6 +37,9 @@ class HBackup {
     if ($modelClassNames === NULL) {
       $modelClassNames = self::getModelClassList();
     }
+    if (!is_array($modelClassNames)) {
+      $modelClassNames = array($modelClassNames);
+    }
     // Open output file.
     $handle = fopen($outputFileName, 'w');
 
@@ -138,6 +141,19 @@ class HBackup {
     } while (true);
   }
 
+  public static function setForeignKeyCheck($value)
+  {
+    Yii::app()->db->createCommand("SET FOREIGN_KEY_CHECKS={$value};")->execute();
+  }
+
+  public static function truncate($tableName, $setForeignKeyCheck = FALSE)
+  {
+    if ($setForeignKeyCheck) {
+      self::setForeignKeyCheck(0);
+    }
+    Yii::app()->db->createCommand("TRUNCATE TABLE {$tableName};")->execute();
+  }
+
   /**
    * Import data from csv file created by exportDbToCsv().
    *
@@ -145,7 +161,7 @@ class HBackup {
    */
   public static function importDbFromCsv($inputFileName)
   {
-    Yii::app()->db->createCommand('SET FOREIGN_KEY_CHECKS=0;')->execute();
+    self::setForeignKeyCheck(0);
     $transaction = Yii::app()->db->beginTransaction(); // Open transaction.
     try {
       // Open input file.
@@ -157,6 +173,8 @@ class HBackup {
         if ($data[0] === self::TABLE_MARKER) {
           // Process model class name line.
           $modelClassName = $data[1];
+          // Truncate table
+          self::truncate((new $modelClassName())->tableName());
           $attributes = NULL; // Reset attribute names.
         } else if ($attributes === NULL) {
           // Process model attribute names line.
@@ -171,8 +189,8 @@ class HBackup {
           }
           // Save record.
           if (!$model->save()) {
-            $model->logError("Error saving $modelClassName");
-            throw new Exception("Error saving $modelClassName $model");
+            $model->logError();
+            throw new Exception("Error saving $modelClassName");
           }
         }
       }
@@ -185,7 +203,7 @@ class HBackup {
       $transaction->rollback(); // Rolback transaction.
       throw $e;
     }
-    Yii::app()->db->createCommand('SET FOREIGN_KEY_CHECKS=1;')->execute();
+    self::setForeignKeyCheck(1);
   }
 
   /**

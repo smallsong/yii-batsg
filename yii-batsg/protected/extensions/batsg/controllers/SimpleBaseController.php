@@ -17,7 +17,7 @@
  * the ordinary jobs.
  * @author umbalaconmeogia
  */
-abstract class SimpleBaseController extends BaseController
+trait SimpleBaseController // extends BaseController
 {
   /**
    * Get the name of the model class used in this controller.
@@ -44,17 +44,81 @@ abstract class SimpleBaseController extends BaseController
   abstract protected function messageModelDeleted();
 
   /**
+   * Get view name for index.
+   * @return string
+   */
+  protected function viewIndex()
+  {
+    return 'index';
+  }
+
+  /**
+   * Get view name for create.
+   * @return string
+   */
+  protected function viewCreate()
+  {
+    return 'create';
+  }
+
+  /**
+   * Get view name for createConfirm.
+   * @return string
+   */
+  protected function viewCreateConfirm()
+  {
+    return 'createConfirm';
+  }
+
+  /**
+   * Get view name for update.
+   * @return string
+   */
+  protected function viewUpdate()
+  {
+    return 'update';
+  }
+
+  /**
+   * Get view name for updateConfirm.
+   * @return string
+   */
+  protected function viewUpdateConfirm()
+  {
+    return 'updateConfirm';
+  }
+
+  /**
+   * Get view name for view.
+   * @return string
+   */
+  protected function viewView()
+  {
+    return 'view';
+  }
+
+  /**
    * List all records of this table.
    */
   public function actionIndex()
   {
-    $dataProvider = new CActiveDataProvider($this->modelClassName(),
-      array(
-        'sort' => array('defaultOrder' => 'id DESC'),
-//        'pagination' => array('pageSize' => 10),
-      )
-    );
-    $this->render('index', array('dataProvider' => $dataProvider));
+    $model = $this->dataProviderModelForIndex($this->modelClassName());
+    $this->render($this->viewIndex(), array('model' => $model));
+  }
+
+  /**
+   * Create model used in CActiveDataProvider()
+   * @param string $modelClassName
+   * @return CActiveDataProvider
+   */
+  protected function dataProviderModelForIndex($modelClassName)
+  {
+    $model = new $modelClassName('search');
+    $model->unsetAttributes();  // clear any default values
+    if (isset($_REQUEST[$modelClassName])) {
+      $model->attributes = $_REQUEST[$modelClassName];
+    }
+    return $model;
   }
 
   /**
@@ -62,23 +126,23 @@ abstract class SimpleBaseController extends BaseController
    * or process when user submit data to create new record.
    */
   public function actionCreate() {
-    $this->simpleCreateOrUpdate($this->modelClassName(), NULL, 'create',
-        $this->messageModelCreated());
+    $this->simpleCreateOrUpdate($this->modelClassName(), NULL, $this->viewCreate(),
+        $this->messageModelCreated(), NULL, $this->viewView());
   }
 
   /**
    * Process when user click back button on createConfirm page.
    */
   public function actionCreateBack() {
-    $this->simpleCreateOrUpdate($this->modelClassName(), NULL, 'create',
-        NULL, FALSE);
+    $this->simpleCreateOrUpdate($this->modelClassName(), NULL, $this->viewCreate(),
+        NULL, FALSE, $this->viewView());
   }
 
   /**
    * Display confirmation page when creating new record.
    */
   public function actionCreateConfirm() {
-    $this->simpleConfirm($this->modelClassName(), NULL, 'createConfirm', 'create');
+    $this->simpleConfirm($this->modelClassName(), NULL, $this->viewCreateConfirm(), $this->viewCreate());
   }
 
 
@@ -87,23 +151,23 @@ abstract class SimpleBaseController extends BaseController
    * or process when user submit data to update a record.
    */
   public function actionUpdate($id) {
-    $this->simpleCreateOrUpdate($this->modelClassName(), $id, 'update',
-        $this->messageModelUpdated());
+    $this->simpleCreateOrUpdate($this->modelClassName(), $id, $this->viewUpdate(),
+        $this->messageModelUpdated(), NULL, $this->viewView());
   }
 
   /**
    * Process when user click back button on updateConfirm page.
    */
   public function actionUpdateBack($id) {
-    $this->simpleCreateOrUpdate($this->modelClassName(), $id, 'update',
-        NULL, FALSE);
+    $this->simpleCreateOrUpdate($this->modelClassName(), $id, $this->viewUpdate(),
+        NULL, FALSE, $this->viewView());
   }
 
   /**
    * Display confirmation page when updating a record.
    */
   public function actionUpdateConfirm($id) {
-    $this->simpleConfirm($this->modelClassName(), $id, 'updateConfirm', 'update');
+    $this->simpleConfirm($this->modelClassName(), $id, $this->viewUpdateConfirm(), $this->viewUpdate());
   }
 
   /**
@@ -112,8 +176,8 @@ abstract class SimpleBaseController extends BaseController
    */
   public function actionView($id)
   {
-    $this->render('view',
-        array('model' => $this->loadModel($this->modelClassName(), $id)));
+    $this->render($this->viewView(),
+        array('model' => BaseModel::loadModel($this->modelClassName(), $id)));
   }
 
   /**
@@ -127,7 +191,7 @@ abstract class SimpleBaseController extends BaseController
   {
     if(Yii::app()->request->isPostRequest) {
       // we only allow deletion via POST request
-      $this->loadModel($this->modelClassName(), $id)->delete();
+      BaseModel::loadModel($this->modelClassName(), $id)->delete();
 
       // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
       if(!isset($_GET['ajax'])) {
@@ -163,7 +227,7 @@ abstract class SimpleBaseController extends BaseController
       $pkName = 'id')
   {
     // Create model to display in form.
-    $model = $this->loadModel($modelClassName, $id);
+    $model = BaseModel::loadModel($modelClassName, $id);
 
     // Get model data from URL parameter if set.
     if(isset($_POST[$modelClassName]))
@@ -174,7 +238,7 @@ abstract class SimpleBaseController extends BaseController
       // Redirect to view page if save successfully.
       if($this->simpleCreateOrUpdateSaveModel($model)) {
           Y::setFlashSuccess($successFlashMessage);
-          $this->redirect(array($viewView, $pkName => $model->$pkName));
+          $this->redirect(array('view', $pkName => $model->$pkName));
       }
     }
 
@@ -204,7 +268,7 @@ abstract class SimpleBaseController extends BaseController
   protected function simpleConfirm($modelClassName, $id, $confirmView, $formView)
   {
     // Create model to display in form.
-    $model = $this->loadModel($modelClassName, $id);
+    $model = BaseModel::loadModel($modelClassName, $id);
 
     // Get model data from URL parameter if set.
     if(isset($_POST[$modelClassName]))
