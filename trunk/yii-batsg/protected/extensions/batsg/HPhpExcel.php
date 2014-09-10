@@ -1,5 +1,6 @@
 <?php
 Yii::import('application.vendor.PHPExcel.Classes.PHPExcel');
+$temp = new PHPExcel(); // To load auto load.
 
 /**
  * Helper to access PHPExcel (http://phpexcel.codeplex.com/).
@@ -12,6 +13,37 @@ Yii::import('application.vendor.PHPExcel.Classes.PHPExcel');
  */
 class HPhpExcel
 {
+  /**
+   * @param string $file
+   * @return PHPExcel
+   */
+  public static function load($file)
+  {
+    return PHPExcel_IOFactory::load($file);
+  }
+
+  /**
+   * @param string $sourceFile
+   * @param string $writerType
+   * @return PHPExcel_Writer_IWriter
+   */
+  public static function createWriter($excel, $writerType)
+  {
+    if (is_string($excel)) {
+      $excel = self::load($excel);
+    }
+    return PHPExcel_IOFactory::createWriter($excel, $writerType);
+  }
+
+  public static function removeSheetByName(PHPExcel $excel, $sheetName)
+  {
+    foreach ($excel->getSheetNames() as $index => $name) {
+      if ($sheetName == $name) {
+        $excel->removeSheetByIndex($index);
+        break;
+      }
+    }
+  }
 
   /**
    * @param string $file
@@ -48,6 +80,18 @@ class HPhpExcel
   public static function toArray($sheet)
   {
     return $sheet->toArray(null,true,true,true);
+  }
+
+  /**
+   * Set sheet title. This will convert invalid character to _.
+   * @param PHPExcel_Worksheet $sheet
+   * @param string $sheetTitle
+   */
+  public static function setSheetTitle(PHPExcel_Worksheet $sheet, $sheetTitle)
+  {
+    $invalidCharacters = array('*', ':', '/', '\\', '?', '[', ']', '＊', '：', '／', '￥', '？', '［', '］');
+    $sheetTitle = str_replace($invalidCharacters, '_', $sheetTitle);
+    $sheet->setTitle($sheetTitle);
   }
 }
 ?>

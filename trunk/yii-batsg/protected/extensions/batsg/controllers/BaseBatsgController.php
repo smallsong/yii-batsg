@@ -31,9 +31,9 @@ class BaseBatsgController extends BaseController
   /**
    * Update a model from form.
    * @param string $modelClassName
-   * @param BaseNemoModel[] $hashedModelList
+   * @param BaseBatsgModel[] $hashedModelList
    * @param string[] $modelArr
-   * @return BaseNemoModel Return the model. If a new model (not exist in DB) is deleted, return NULL.
+   * @return BaseBatsgModel Return the model. If a new model (not exist in DB) is deleted, return NULL.
    */
   protected function updateModelFromForm($modelClassName, &$hashedModelList, $modelArr)
   {
@@ -43,7 +43,7 @@ class BaseBatsgController extends BaseController
     if (isset($modelArr['id']) && $modelArr['id']) {
       // Model exists in DB. Get it from model list.
       $model = $hashedModelList[$modelArr['id']];
-    } else if (!isset($modelArr['data_status']) || $modelArr['data_status'] <> BaseNemoModel::DATA_STATUS_DELETE) {
+    } else if (!isset($modelArr['data_status']) || $modelArr['data_status'] <> BaseBatsgModel::DATA_STATUS_DELETE) {
       // Else create new model object.
       $model = new $modelClassName();
       $hashedModelList[] = $model;

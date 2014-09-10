@@ -64,6 +64,12 @@ class BaseController extends CController
     return $model;
   }
 
+  /**
+   * Load model list from URL params.
+   * Each model information is passed as $_REQUEST[$modelClassName][index]
+   * @param string $modelClassName Class name of model.
+   * @return CActiveRecord[]
+   */
   protected function loadModelListFromParam($modelClassName) {
     $modelList = array();
     if (isset($_REQUEST[$modelClassName])) {

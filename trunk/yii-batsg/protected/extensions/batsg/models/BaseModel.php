@@ -1,6 +1,8 @@
 <?php
 class BaseModel extends CActiveRecord
 {
+  private $_backupAttributes = NULL;
+
   /**
    * Returns the data model based on the primary key given.
    * If the data model is not found, an HTTP exception will be raised.
@@ -73,6 +75,8 @@ class BaseModel extends CActiveRecord
   /**
    * Create a criteria for searching fields with OR operator (for example, searching name and name kana fields).
    * This is used to merge with the main criteria.
+   * Usage example:
+   *  $mainCriteria->mergeWith($this->dbCriteriaOr('Adam', array('first_name', 'last_name')));
    * @param string $searchValue
    * @param string $table
    * @param string[] $fields
@@ -177,12 +181,22 @@ class BaseModel extends CActiveRecord
   }
 
   /**
-   * Lock a DB table.
-   * @param string $tableName
+   * Lock a DB table. This method should use with InnoDB only.
+   * @param mixed $tables A string (table name) or array of tables with or without alias ("people", "people AS p")
    */
-  public static function lockTable($tableName)
+  public static function lockTable($tables)
   {
-    Yii::app()->db->createCommand("LOCK TABLES $tableName WRITE, $tableName AS t WRITE;")->execute();
+    if (!is_array($tables)) {
+      $tables = array($tables);
+    }
+    $lockTables = array();
+    foreach ($tables as $table) {
+      $lockTables[] = "$table WRITE";
+    }
+    $lockTables = implode(', ', $lockTables);
+
+    Yii::app()->db->createCommand("SET AUTOCOMMIT = 0;")->execute(); // This is needed for transaction use inside the lock.
+    Yii::app()->db->createCommand("LOCK TABLES {$lockTables};")->execute();
   }
 
   /**
@@ -229,6 +243,30 @@ class BaseModel extends CActiveRecord
     foreach ($fields as $index => $field) {
       $sourceField = is_numeric($index) ? $field : $index;
       $this->$field = $source[$sourceField];
+    }
+  }
+
+  public function backupAttributes()
+  {
+    $this->_backupAttributes = $this->attributes;
+  }
+
+  public function restoreAttributes()
+  {
+    if ($this->_backupAttributes) {
+      foreach ($this->_backupAttributes as $key => $value) {
+        $this->$key = $value;
+      }
+    }
+  }
+
+  /**
+   * @param BaseModel[] $models
+   */
+  public static function restoreAttributeOfModels(array $models)
+  {
+    foreach ($models as $model) {
+      $model->restoreAttributes();
     }
   }
 }
