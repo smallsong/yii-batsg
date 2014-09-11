@@ -40,7 +40,7 @@ class BaseBatsgController extends BaseController
     $model = NULL;
     // Create model object.
     // If model exists in $hashedModelList, use it
-    if (isset($modelArr['id']) && $modelArr['id']) {
+    if (isset($modelArr['id']) && $modelArr['id'] && isset($hashedModelList[$modelArr['id']])) {
       // Model exists in DB. Get it from model list.
       $model = $hashedModelList[$modelArr['id']];
     } else if (!isset($modelArr['data_status']) || $modelArr['data_status'] <> BaseBatsgModel::DATA_STATUS_DELETE) {
