@@ -87,6 +87,22 @@ class BaseBatsgModel extends BaseModel
     $this->setFieldToNull(array('id', 'data_status', 'create_time', 'create_user_id', 'update_time', 'update_user_id'));
   }
 
+  public function saveLogError()
+  {
+    $result = parent::save();
+    if (!$result) {
+      $this->logError();
+    }
+    return $result;
+  }
+
+  public function saveThrowError()
+  {
+    if (!$this->saveLogError()) {
+      throw new Exception("Error while saving " . $this->toString());
+    }
+  }
+
   public function deleteLogically()
   {
     $class = get_class($this);
@@ -96,7 +112,7 @@ class BaseBatsgModel extends BaseModel
     if (!$this->save()) {
       $this->logError();
       $class = get_class($this);
-      throw new Exception("Error while deleting $class {$this->id}");
+      throw new Exception("Error while deleting " . $this->toString());
     }
   }
 }
