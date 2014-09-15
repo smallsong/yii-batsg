@@ -68,6 +68,9 @@ class BaseBatsgModel extends BaseModel
     return $result;
   }
 
+  /**
+   * @return BaseBatsgModel[]
+   */
   public function findAllNotDeleted()
   {
     return $this->findAll('data_status <> :deleted', array(':deleted' => self::DATA_STATUS_DELETE));
@@ -114,6 +117,47 @@ class BaseBatsgModel extends BaseModel
       $class = get_class($this);
       throw new Exception("Error while deleting " . $this->toString());
     }
+  }
+
+  /**
+   * Fields that are not checked in hasData()
+   * @return string[]
+   */
+  protected function hasDataNotCheckFields()
+  {
+    return array(
+      'id',
+      'data_status',
+      'create_user_id',
+      'create_time',
+      'update_user_id',
+      'update_time',
+    );
+  }
+
+  /**
+   * Fields that are used when checking hasData().
+   * @return string[]
+   */
+  protected function hasDataCheckFields()
+  {
+    return array_diff(array_keys($this->attributes), $this->hasDataNotCheckFields());
+  }
+
+  /**
+   * Check if operation has any data (inputable by user) specified.
+   * @return boolean
+   */
+  public function hasData()
+  {
+    $result = FALSE;
+    foreach ($this->hasDataCheckFields() as $field) {
+      if ($this->$field) {
+        $result = TRUE;
+        break;
+      }
+    }
+    return $result;
   }
 }
 ?>
