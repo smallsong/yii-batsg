@@ -212,12 +212,12 @@ class HHtml
     }
 		return $html;
   }
-	
+
   public static function showHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
   {
 		echo self::activeHiddenFields($model, $index, $fields, $htmlOptions);
 	}
-	
+
   /**
    * Generate an index for model list element.
    * If primary key is set, then primary key is used, else a random string is generated.

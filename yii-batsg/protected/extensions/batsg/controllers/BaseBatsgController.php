@@ -30,6 +30,7 @@ class BaseBatsgController extends BaseController
 
   /**
    * Update a model from form.
+   * This will update $hashedModelList array.
    * @param string $modelClassName
    * @param BaseBatsgModel[] $hashedModelList
    * @param string[] $modelArr
