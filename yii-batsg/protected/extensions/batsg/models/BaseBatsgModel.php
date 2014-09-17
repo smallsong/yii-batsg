@@ -105,14 +105,12 @@ class BaseBatsgModel extends BaseModel
 
   public function deleteLogically()
   {
-    $class = get_class($this);
-    Yii::trace("Delete $class {$this->id} logically.");
+    Yii::log("Delete $this logically.");
 
     $this->data_status = self::DATA_STATUS_DELETE;
     if (!$this->save()) {
       $this->logError();
-      $class = get_class($this);
-      throw new Exception("Error while deleting " . $this->toString());
+      throw new Exception("Error while deleting " . $this);
     }
   }
 }

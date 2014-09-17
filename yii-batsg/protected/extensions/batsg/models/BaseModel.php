@@ -92,6 +92,10 @@ class BaseModel extends CActiveRecord
     return $criteria;
   }
 
+	public function __toString()
+	{
+	  return $this->toString($this->tableSchema->primaryKey);
+	}
 
   /**
    * @param mixed $fields String or string array. If NULL, all attributes are used.
@@ -103,7 +107,7 @@ class BaseModel extends CActiveRecord
       $fields = array_keys($this->attributes);
     }
     if (!is_array($fields)) {
-      $info = array();
+      $fields = array($fields);
     }
     foreach ($fields as $field) {
       $info[] = "$field: {$this->$field}";
@@ -268,6 +272,27 @@ class BaseModel extends CActiveRecord
     foreach ($models as $model) {
       $model->restoreAttributes();
     }
+  }
+
+  /**
+   * Compare this model and other model by specified $field.
+   * @param BaseModel $other
+   * @param string $field
+   * @return int -1 if this model is "smaller", 0 if two are equal or 1 if this model is "larger".
+   */
+  public function compare(BaseModel $other, $fields)
+  {
+	  if (!is_array($fields)) {
+		  $fields = array($fields);
+		}
+		$result = 0;
+		foreach ($fields as $field) {
+		  if ($this->$field != $other->$field) {
+				$result = $this->$field < $other->$field ? -1 : 1;
+				break;
+			}
+		}
+    return $result;
   }
 }
 ?>
