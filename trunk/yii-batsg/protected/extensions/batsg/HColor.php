@@ -5,91 +5,22 @@ class HColor
   const RGB_INDEX_GREEN = 1;
   const RGB_INDEX_BLUE = 2;
 
-  const COLOR_WHITE =	'#FFFFFF';
-  const COLOR_SILVER = '#C0C0C0';
-  const COLOR_GRAY = '#808080';
-  const COLOR_BLACK = '#000000';
-  const COLOR_RED = '#FF0000';
-  const COLOR_MAROON = '#800000';
-  const COLOR_YELLOW = '#FFFF00';
-  const COLOR_OLIVE = '#808000';
-  const COLOR_LIME = '#00FF00';
-  const COLOR_GREEN = '#008000';
-  const COLOR_CYAN = '#00FFFF';
-  const COLOR_TEAL = '#008080';
-  const COLOR_BLUE = '#0000FF';
-  const COLOR_NAVY = '#000080';
-  const COLOR_MAGENTA = '#FF00FF';
-  const COLOR_PURPLE = '#800080';
-
-  /**
-   * Convert a intensity color (value of 0~255) to int value.
-   * @param mixed $color int or hex string (#8F for example)
-   * @return int
-   */
-  private static function colorIntensityToInt($color)
-  {
-    // Remove # if color is hex.
-    if (is_string($color) && $color[0] == '#') {
-      $color = substr($color, 1, 2);
-    }
-    return (int) $color;
-  }
-
-  /**
-   * Generate a random color intensity (0~255).
-   * @param mixed $range If $range is NULL or an array ($min, $max), then a random value is generated,
-   *                      othewise, it return the $range value itself.
-   *                      If hex string is converted to int.
-   * @return int
-   */
-  private static function generateRandomColorIntensity($range = NULL)
-  {
-    if ($range === NULL || is_array($range)) {
-      if (is_array($range)) {
-        $min = self::colorIntensityToInt($range[0]);
-        $max = self::colorIntensityToInt($range[1]);
-      } else {
-        $min = 0;
-        $max = 255;
-      }
-      $range = mt_rand($min, $max);
-    }
-    return self::colorIntensityToInt($range);
-  }
-
   /**
    * Generate random number in hex (include #).
-   * @param mixed $red Fix color (Int or hex). If NULL, then created randomly.
-   * @param mixed $green Fix color (Int or hex). If NULL, then created randomly.
-   * @param mixed $blue Fix color (Int or hex). If NULL, then created randomly.
    * @return string
    */
-  public static function generateRandomColorHex($red = NULL, $green = NULL, $blue = NULL, $sharp = TRUE)
+  public static function generateRandomColorHex()
   {
-    $hexColor = ($red === NULL && $green === NULL && $blue === NULL) ?
-        sprintf('%06X', mt_rand(0, 0xFFFFFF)) :
-        self::convertRgbToHex(self::generateRandomColorRgb($red, $green, $blue), FALSE);
-    if ($sharp) {
-      $hexColor = "#$hexColor";
-    }
-    return $hexColor;
+    return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
   }
 
   /**
    * Generate random number in rgb.
-   * @param mixed $red Fix color (Int or hex). If NULL, then created randomly.
-   * @param mixed $green Fix color (Int or hex). If NULL, then created randomly.
-   * @param mixed $blue Fix color (Int or hex). If NULL, then created randomly.
    * @return int[3]
    */
-  public static function generateRandomColorRgb($red = NULL, $green = NULL, $blue = NULL)
+  public static function generateRandomColorRgb()
   {
-    $red = self::generateRandomColorIntensity($red);
-    $green = self::generateRandomColorIntensity($green);
-    $blue = self::generateRandomColorIntensity($blue);
-
-    return array($red, $green, $blue);
+    return array(mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
   }
 
   /**
@@ -114,9 +45,9 @@ class HColor
   {
     $hexColor = self::removeSharpOfHexColor($hexColor);
     return array(
-        hexdec(substr($hexColor, 0, 2)),
-        hexdec(substr($hexColor, 2, 2)),
-        hexdec(substr($hexColor, 4, 2))
+        hexdec(substr($hexColor,0,2)),
+        hexdec(substr($hexColor,2,2)),
+        hexdec(substr($hexColor,4,2))
     );
   }
 
@@ -125,13 +56,9 @@ class HColor
    * @param int[3] $rgbColor
    * @return string
    */
-  public static function convertRgbToHex($rgbColor, $sharp = TRUE)
+  public static function convertRgbToHex($rgbColor)
   {
-    $colorHex = dechex($rgbColor[self::RGB_INDEX_RED]) . dechex($rgbColor[self::RGB_INDEX_GREEN]) . dechex($rgbColor[self::RGB_INDEX_BLUE]);
-    if ($sharp) {
-      $colorHex = "#$colorHex";
-    }
-    return $colorHex;
+    return '#' . dechex($rgbColor[self::RGB_INDEX_RED]) . dechex($rgbColor[self::RGB_INDEX_GREEN]) . dechex($rgbColor[self::RGB_INDEX_BLUE]);
   }
 
   /**
@@ -196,16 +123,6 @@ class HColor
       (max($color1[self::RGB_INDEX_GREEN], $color2[self::RGB_INDEX_GREEN]) - min($color1[self::RGB_INDEX_GREEN], $color2[self::RGB_INDEX_GREEN])) +
       (max($color1[self::RGB_INDEX_BLUE], $color2[self::RGB_INDEX_BLUE]) - min($color1[self::RGB_INDEX_BLUE], $color2[self::RGB_INDEX_BLUE]));
     return abs($brightnessDifference) > 125 && abs($colorDifferece) > 500;
-  }
-
-  /**
-   * Get a contrast color.
-   * @param mixed $backgroundColor Hex color (including # or not) or (r, g, b).
-   * @return string Hex color.
-   */
-  public static function getContrastTextColor($backgroundColor)
-  {
-    return self::isDarkColor($backgroundColor) ? self::COLOR_WHITE : self::COLOR_BLACK;
   }
 }
 ?>
