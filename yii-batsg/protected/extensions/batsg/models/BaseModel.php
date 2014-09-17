@@ -294,5 +294,23 @@ class BaseModel extends CActiveRecord
 		}
     return $result;
   }
+
+  /**
+   * Sort array of models by specified attribute.
+   * @param BaseModel[] $models
+   * @param string $sortField "display_order" for example.
+   * @return BaseModel[] The sorted model list.
+   */
+  public static function sortModels(array &$models, $sortField)
+  {
+    usort($models, function($a, $b) use ($sortField) {
+      $result = $a->compare($b, $sortField);
+      if ($result == 0) { // Sort by id if two are equal.
+        $result = $a->compare($b, 'id');
+      }
+      return $result;
+    });
+    return $models;
+  }
 }
 ?>
