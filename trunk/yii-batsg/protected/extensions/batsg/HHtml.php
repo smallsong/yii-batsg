@@ -52,6 +52,12 @@ class HHtml
     return CHtml::activeCheckBoxList($model, $attribute, $data, $htmlOptions);
   }
 
+  public static function activeLabelEx($model, $attribute,
+      $htmlOptions = array('style' => 'display: inline; font-weight: normal;'))
+  {
+    return CHtml::activeLabelEx($model, $attribute, $htmlOptions);
+  }
+
   /**
    * Display a checkbox that is "readonly" (user cannot click on it).
    * This is used mainly for displaying data as checkbox.
@@ -212,12 +218,12 @@ class HHtml
     }
 		return $html;
   }
-	
+
   public static function showHiddenFields($model, $index = NULL, $fields = NULL, $htmlOptions = array())
   {
 		echo self::activeHiddenFields($model, $index, $fields, $htmlOptions);
 	}
-	
+
   /**
    * Generate an index for model list element.
    * If primary key is set, then primary key is used, else a random string is generated.
