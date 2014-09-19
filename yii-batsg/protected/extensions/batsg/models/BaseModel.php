@@ -298,13 +298,13 @@ class BaseModel extends CActiveRecord
   /**
    * Sort array of models by specified attribute.
    * @param BaseModel[] $models
-   * @param string $sortField "display_order" for example.
+   * @param mixed $sortField String or array of string. "display_order" for example.
    * @return BaseModel[] The sorted model list.
    */
-  public static function sortModels(array &$models, $sortField)
+  public static function sortModels(array &$models, $sortFields)
   {
-    usort($models, function($a, $b) use ($sortField) {
-      $result = $a->compare($b, $sortField);
+    usort($models, function($a, $b) use ($sortFields) {
+      $result = $a->compare($b, $sortFields);
       if ($result == 0) { // Sort by id if two are equal.
         $result = $a->compare($b, 'id');
       }
