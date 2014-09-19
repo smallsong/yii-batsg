@@ -71,9 +71,29 @@ class BaseBatsgModel extends BaseModel
   /**
    * @return BaseBatsgModel[]
    */
-  public function findAllNotDeleted()
+  public function findAllNotDeleted($order = NULL)
   {
-    return $this->findAll('data_status <> :deleted', array(':deleted' => self::DATA_STATUS_DELETE));
+    $criteria = new CDbCriteria();
+    $criteria->compare('data_status', '<>' . self::DATA_STATUS_DELETE);
+    $criteria->order = $order;
+    return $this->findAll($criteria);
+  }
+
+  /**
+   * Search for same models by condition specified by this model.
+   * @param string[] $searchFields
+   * @param string $order
+   * @return BaseBatsgModel[]
+   */
+  public function searchNotDeleted($searchFields, $order = NULL)
+  {
+    $criteria = new CDbCriteria();
+    $criteria->compare('data_status', '<>' . self::DATA_STATUS_DELETE);
+    foreach ($searchFields as $fieldName) {
+      $criteria->compare($fieldName, $this->$fieldName);
+    }
+    $criteria->order = $order;
+    return $this->findAll($criteria);
   }
 
   /**

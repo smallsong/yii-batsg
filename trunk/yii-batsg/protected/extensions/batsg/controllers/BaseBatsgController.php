@@ -29,14 +29,37 @@ class BaseBatsgController extends BaseController
   }
 
   /**
+   * Update models load from DB by data from form (including new created model).
+   * @param string $modelClassName
+   * @param BaseBatsgModel[] $hashedDbModels
+   * @return BaseBatsgModel[]
+   */
+  protected function loadInputModelsFromForm($modelClassName, $hashedDbModels)
+  {
+    $models = array();
+    if (isset($_REQUEST[$modelClassName])) {
+      foreach ($_REQUEST[$modelClassName] as $modelArr) {
+        // Update model by form value.
+        $model = $this->updateModelFromForm($modelClassName, $hashedDbModels, $modelArr);
+        $models[] = $model;
+      }
+    }
+    foreach ($hashedDbModels as $model) {
+      if (!in_array($model, $models)) {
+        $models[] = $model;
+      }
+    }
+    return $models;
+  }
+
+  /**
    * Update a model from form.
-   * This will update $hashedModelList array.
    * @param string $modelClassName
    * @param BaseBatsgModel[] $hashedModelList
    * @param string[] $modelArr
    * @return BaseBatsgModel Return the model. If a new model (not exist in DB) is deleted, return NULL.
    */
-  protected function updateModelFromForm($modelClassName, &$hashedModelList, $modelArr)
+  protected function updateModelFromForm($modelClassName, $hashedModelList, $modelArr)
   {
     $model = NULL;
     // Create model object.
@@ -47,7 +70,7 @@ class BaseBatsgController extends BaseController
     } else if (!isset($modelArr['data_status']) || $modelArr['data_status'] <> BaseBatsgModel::DATA_STATUS_DELETE) {
       // Else create new model object.
       $model = new $modelClassName();
-      $hashedModelList[] = $model;
+//       $hashedModelList[] = $model; // TODO: should remove this.
     }
     // Assign value from form to the model.
     if ($model) {
