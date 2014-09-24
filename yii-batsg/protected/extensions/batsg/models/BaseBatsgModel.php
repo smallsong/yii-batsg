@@ -177,5 +177,13 @@ class BaseBatsgModel extends BaseModel
     }
     return $result;
   }
+
+  public static function hashModels($models, $hashField = 'id')
+  {
+    if (is_string($models)) {
+      $models = $models::model()->findAllNotDeleted();
+    }
+    return parent::hashModels($models, $hashField);
+  }
 }
 ?>
