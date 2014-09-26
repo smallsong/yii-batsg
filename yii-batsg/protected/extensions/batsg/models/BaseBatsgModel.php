@@ -178,6 +178,13 @@ class BaseBatsgModel extends BaseModel
     return $result;
   }
 
+  /**
+   * Create a hash of model list by a model field value (usally "id" field).
+   * @param mixed $models An array of models or a model class name.
+   *                      In case of model class name, then get all alive model from the db table.
+   * @param string $hashField
+   * @return CActiveRecord[] field value => model.
+   */
   public static function hashModels($models, $hashField = 'id')
   {
     if (is_string($models)) {
