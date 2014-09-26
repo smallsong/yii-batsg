@@ -28,5 +28,22 @@ class HArrayTest extends CTestCase
     $this->assertTrue(HArray::equal($arr, array(2, 3, 4, 5, 6)));
   }
   
+  public function testGetFirstValue()
+  {
+    $array = array('a', 'b', 'c');
+    $this->assertEquals('a', HArray::getFirstValue($array));
+
+    $array = array(5 => 'a', 4 => 'b', 3 => 'c');
+    $this->assertEquals('a', HArray::getFirstValue($array));
+  }
+  
+  public function testGetFirstKey()
+  {
+    $array = array('a', 'b', 'c');
+    $this->assertEquals(0, HArray::getFirstKey($array));
+
+    $array = array(5 => 'a', 4 => 'b', 3 => 'c');
+    $this->assertEquals(5, HArray::getFirstKey($array));
+  }
 }
 ?>

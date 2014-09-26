@@ -59,13 +59,19 @@ class BaseModel extends CActiveRecord
   }
 
   /**
-   * Create a hash of model list by a field value.
-   * @param CActiveRecord $models
+   * Create a hash of model list by a model field value (usally "id" field).
+   * @param mixed $models An array of models or a model class name.
+   *                      In case of model class name, then get all alive model from the db table.
    * @param string $hashField Default by id.
-   * @return array field value => model.
+   * @return CActiveRecord[] field value => model.
    */
-  public static function hashModels($models, $hashField = 'id') {
+  public static function hashModels($models, $hashField = 'id')
+  {
     $hash = array();
+
+    if (is_string($models)) {
+      $models = $models::model()->findAll();
+    }
     foreach ($models as $model) {
       $hash[$model->$hashField] = $model;
     }
@@ -213,11 +219,26 @@ class BaseModel extends CActiveRecord
 
   /**
    * Copy fields from other model to this.
+   * Usage example:
+   * <pre>
+   *   // This is equivalent to
+   *   // $destModel->name = $sourceModel->name;
+   *   $destModel->copyFieldFromModel($sourceModel, 'name');
+   *
+   *   // This is equivalent to
+   *   // $destModel->name = $sourceModel->name;
+   *   // $destModel->source_id = $sourceModel->id;
+   *   $destModel->copyFieldFromModel($sourceModel, array('name', 'id' => 'source_id');
+   * </pre>
    * @param CActiveRecord $source
-   * @param string[] $fields (array of field names or source field -> dest field.
+   * @param mixed $fields A string (field name) or an array of field names.
+   *              Array element may be a field name or in type of source field => dest field.
    */
   public function copyFieldFromModel($source, $fields)
   {
+    if (!is_array($fields)) {
+      $fields = array($fields);
+    }
     foreach ($fields as $index => $fieldName) {
       $sourceField = is_numeric($index) ? $fieldName : $index;
       $this->$fieldName = $source->$sourceField;
@@ -311,6 +332,21 @@ class BaseModel extends CActiveRecord
       return $result;
     });
     return $models;
+  }
+
+  /**
+   * Get specified field value of a model array into array.
+   * @param CActiveRecord[] $models
+   * @param string $field
+   * @return array
+   */
+  public static function getFieldValueArray($models, $field = 'id')
+  {
+    $result = array();
+    foreach ($models as $model) {
+      $result[] = $model->$field;
+    }
+    return $result;
   }
 }
 ?>
