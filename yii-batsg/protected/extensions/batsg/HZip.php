@@ -16,16 +16,15 @@ class HZip
   private static function folderToZip($folder, $zipFile, $exclusiveLength) {
     $handle = opendir($folder);
     while ($f = readdir($handle)) {
-      if ($f != '.' && $f != '..') {
+      if ($f != '.' && $f != '..') { // Ignore . and .. sub directories.
         $filePath = "$folder/$f";
         // Remove prefix from file path before add to zip.
         $localPath = substr($filePath, $exclusiveLength);
-        if (is_file($filePath)) {
+        if (is_file($filePath)) { // Add file to zip file.
           $zipFile->addFile($filePath, $localPath);
-        } elseif (is_dir($filePath)) {
-          // Add sub-directory.
-          $zipFile->addEmptyDir($localPath);
-          self::folderToZip($filePath, $zipFile, $exclusiveLength);
+        } elseif (is_dir($filePath)) { // Add sub-directory to zip file.
+          $zipFile->addEmptyDir($localPath); // Add empty sub-directory.
+          self::folderToZip($filePath, $zipFile, $exclusiveLength); // Continuing zip the files in the sub-directory.
         }
       }
     }
@@ -33,9 +32,9 @@ class HZip
   }
 
   /**
-   * Zip a folder (include itself).
+   * Zip a folder (including itself).
    * Usage:
-   *   HZip::zipDir('/path/to/sourceDir', '/path/to/out.zip');
+   *   <code>HZip::zipDir('/path/to/sourceDir', '/path/to/out.zip');</code>
    *
    * @param string $sourcePath Path of directory to be zip.
    * @param string $outZipPath Path of output zip file.
