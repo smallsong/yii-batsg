@@ -48,7 +48,6 @@ class HZip
     $z = new ZipArchive();
     $z->open($outZipPath, ZIPARCHIVE::CREATE);
     $z->addEmptyDir($dirName);
-    echo "$parentPath\n";
     self::folderToZip($sourcePath, $z, strlen($sourcePath) - strlen($dirName));
     $z->close();
   }
