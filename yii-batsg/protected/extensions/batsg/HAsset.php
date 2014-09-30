@@ -1,7 +1,8 @@
 <?php
 /**
- * Manipulate assets path.
+ * Manipulate assets path in <code>protected/assets</code>.
  * @author Thanh
+ * @deprecated Consider using HAssets instead.
  */
 class HAsset
 {
