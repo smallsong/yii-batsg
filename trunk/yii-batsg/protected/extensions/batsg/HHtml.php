@@ -6,6 +6,10 @@
  */
 class HHtml
 {
+  /**
+   * Used in modelIndex()
+   * @var int
+   */
   private static $modelIndexCounter = 0;
 
   /**
