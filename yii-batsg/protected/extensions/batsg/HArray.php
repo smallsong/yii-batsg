@@ -171,5 +171,12 @@ class HArray
 
     return $result;
   }
+  
+  /**
+   * Get an element. If not exist, return the default value.
+   */
+  public static function get(&$var, $default = NULL) {
+    return isset($var) ? $var : $default;
+  }
 }
 ?>
