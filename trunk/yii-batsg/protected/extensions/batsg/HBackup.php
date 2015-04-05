@@ -141,9 +141,32 @@ class HBackup {
     } while (true);
   }
 
+  /**
+   * @param mixed $queries A string (a query) or array of sql queries.
+   */
+  public static function runSqlQueries($queries)
+  {
+    if (!is_array($queries)) {
+      $queries = array($queries);
+    }
+    foreach ($queries as $query) {
+      Yii::app()->db->createCommand($query)->execute();
+    }
+  }
+
   public static function setForeignKeyCheck($value)
   {
-    Yii::app()->db->createCommand("SET FOREIGN_KEY_CHECKS={$value};")->execute();
+    self::runSqlQueries("SET FOREIGN_KEY_CHECKS={$value};");
+  }
+
+  public static function setSqlChecking($setValue)
+  {
+    $queries = array(
+      "SET AUTOCOMMIT = $setValue;",
+      "SET FOREIGN_KEY_CHECKS = $setValue;",
+      "SET UNIQUE_CHECKS = $setValue;",
+    );
+    self::runSqlQueries($queries);
   }
 
   public static function truncate($tableName, $setForeignKeyCheck = FALSE)
@@ -158,10 +181,11 @@ class HBackup {
    * Import data from csv file created by exportDbToCsv().
    *
    * @param string $inputFileName
+   * @param boolean $truncateTable Truncate table or not.
    */
-  public static function importDbFromCsv($inputFileName)
+  public static function importDbFromCsv($inputFileName, $truncateTable = TRUE)
   {
-    self::setForeignKeyCheck(0);
+    self::setSqlChecking(0);
     $transaction = Yii::app()->db->beginTransaction(); // Open transaction.
     try {
       // Open input file.
@@ -174,8 +198,10 @@ class HBackup {
           // Process model class name line.
           $modelClassName = $data[1];
           // Truncate table
-          self::truncate((new $modelClassName())->tableName());
-          $attributes = NULL; // Reset attribute names.
+          if ($truncateTable) {
+            self::truncate((new $modelClassName())->tableName());
+            $attributes = NULL; // Reset attribute names.
+          }
         } else if ($attributes === NULL) {
           // Process model attribute names line.
           $attributes = $data;
@@ -203,7 +229,7 @@ class HBackup {
       $transaction->rollback(); // Rolback transaction.
       throw $e;
     }
-    self::setForeignKeyCheck(1);
+    self::setSqlChecking(1);
   }
 
   /**
